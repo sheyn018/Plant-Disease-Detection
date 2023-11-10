@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Plant Disease Identifier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            text-align: center;
+            background-color: #337ab7;
+            color: #fff;
+            padding: 20px;
+            margin: 0;
+        }
+
+        form {
+            background-color: #fff;
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        input[type="submit"] {
+            background-color: #337ab7;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        p {
+            text-align: center;
+        }
+
+        #uploaded-image {
+            display: none;
+            margin: 20px auto;
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Plant Disease Identifier</h1>
+    <form method="post" enctype="multipart/form-data">
+        <label for="photo">Upload a photo of the plant:</label>
+        <input type="file" name="photo" accept="image/*" required onchange="displayImage()"><br>
+        
+        <img id="uploaded-image" src="" alt="Uploaded Image">
+        
+        <label for="plant_type">Select the plant type:</label>
+        <select name="plant_type" required>
+            <option value="pepper">Pepper</option>
+            <!-- Add more plant options as needed -->
+        </select><br>
+
+        <input type="submit" value="Analyze">
+    </form>
+
+    <h2>Analysis Results:</h2>
+    <p>Plant Type: {{ plant_type }}</p>
+    <p>Disease Type: {{ disease_type }}</p>
+    
+    <script>
+        function displayImage() {
+            var input = document.querySelector('input[type="file"]');
+            var image = document.getElementById('uploaded-image');
+            var file = input.files[0];
+            
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    image.src = e.target.result;
+                    image.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                image.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
