@@ -16,16 +16,28 @@ import joblib
 app = Flask(__name__)
 
 # Load PCA model
-with open('pca_model.pkl', 'rb') as file:
+with open('models/pca_model.pkl', 'rb') as file:
     pca_model = joblib.load(file)
 
 # Load StandardScaler
-with open('scaler_model.pkl', 'rb') as file:
+with open('models/scaler_model.pkl', 'rb') as file:
     scaler = joblib.load(file)
 
 # Load classifier model
-with open('classifier_model.pkl', 'rb') as file:
-    classifier_model = joblib.load(file)
+with open('models/classifiers/Apple_Classifier_model.pkl', 'rb') as file:
+    apple_model = joblib.load(file)
+
+with open('models/classifiers/Corn_Classifier_model.pkl', 'rb') as file:
+    corn_model = joblib.load(file)
+
+with open('models/classifiers/Grapes_Classifier_model.pkl', 'rb') as file:
+    grapes_model = joblib.load(file)
+
+with open('models/classifiers/Potato_Classifier_model.pkl', 'rb') as file:
+    potato_model = joblib.load(file)
+
+with open('models/classifiers/Tomato_Classifier_model.pkl', 'rb') as file:
+    tomato_model = joblib.load(file)
 
 # Define a temporary directory to store uploaded files
 UPLOAD_FOLDER = 'static'  # Use 'static' for simplicity
@@ -117,7 +129,7 @@ def preprocess_image(image_path):
 
     return df
 
-def predict_disease(image_array):
+def predict_disease(image_array, selected_plant_type):
     # Apply PCA transformation
     pca_features = pca_model.transform(image_array)
 
@@ -125,6 +137,17 @@ def predict_disease(image_array):
     normalized_data = scaler.transform(pca_features)
 
     # Predict using the classifier model
+    if selected_plant_type == 'Apple':
+        classifier_model = apple_model
+    elif selected_plant_type == 'Corn':
+        classifier_model = corn_model
+    elif selected_plant_type == 'Grapes':
+        classifier_model = grapes_model
+    elif selected_plant_type == 'Potato':
+        classifier_model = potato_model
+    elif selected_plant_type == 'Tomato':
+        classifier_model = tomato_model
+    
     prediction = classifier_model.predict(normalized_data)
 
     # Map the prediction to the actual disease type (modify as needed)
@@ -136,11 +159,12 @@ def predict_disease(image_array):
 def index():
     plant_type = ''
     disease_type = ''
+    selected_plant_type = 'Apple'  # Assign a default value
     
     if request.method == 'POST':
         # Get user input
         uploaded_file = request.files['photo']
-        selected_plant_type = 'Pepper'
+        selected_plant_type = request.form['plant_type']
 
         # Save the uploaded photo temporarily
         photo_path = 'static/temp.jpg'  # Use 'static' for simplicity
@@ -150,9 +174,9 @@ def index():
         processed_image = preprocess_image(photo_path)
 
         # Predict the disease type
-        disease_type = predict_disease(processed_image)
+        disease_type = predict_disease(processed_image, selected_plant_type)
 
-    return render_template('index.html', plant_type='Pepper', disease_type=disease_type)
+    return render_template('index.html', plant_type=selected_plant_type, disease_type=disease_type)
 
 if __name__ == '__main__':
     app.run(debug=True)
