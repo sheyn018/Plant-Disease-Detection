@@ -12,7 +12,7 @@ from skimage.measure import label
 import joblib
 
 class PlantDiseaseApp:
-    def __init__(self, root, pca_model, scaler, apple_model, corn_model, grapes_model, potato_model, tomato_model):
+    def __init__(self, root, pca_apple_model, pca_corn_model, pca_grapes_model, pca_potato_model, scaler_apple_model, scaler_corn_model, scaler_grapes_model, scaler_potato_model, scaler_tomato_model, classifier_apple_model, classifier_corn_model, classifier_grapes_model, classifier_potato_model, classifier_tomato_model):
         self.root = root
         self.root.title("Plant Disease Detection App")
         self.root.configure(bg="#B3E0FF")  # Set the background color for the entire app
@@ -20,13 +20,23 @@ class PlantDiseaseApp:
         self.selected_plant_type = tk.StringVar()
         self.selected_plant_type.set('Apple')
 
-        self.pca_model = pca_model
-        self.scaler = scaler
-        self.apple_model = apple_model
-        self.corn_model = corn_model
-        self.grapes_model = grapes_model
-        self.potato_model = potato_model
-        self.tomato_model = tomato_model
+        self.pca_apple_model = pca_apple_model
+        self.pca_corn_model = pca_corn_model
+        self.pca_grapes_model = pca_grapes_model
+        self.pca_potato_model = pca_potato_model
+        self.pca_tomato_model = pca_tomato_model
+
+        self.scaler_apple_model = scaler_apple_model
+        self.scaler_corn_model = scaler_corn_model
+        self.scaler_grapes_model = scaler_grapes_model
+        self.scaler_potato_model = scaler_potato_model
+        self.scaler_tomato_model = scaler_tomato_model
+
+        self.classifier_apple_model = classifier_apple_model
+        self.classifier_corn_model = classifier_corn_model
+        self.classifier_grapes_model = classifier_grapes_model
+        self.classifier_potato_model = classifier_potato_model
+        self.classifier_tomato_model = classifier_tomato_model
 
         self.create_widgets()
 
@@ -188,51 +198,60 @@ class PlantDiseaseApp:
             processed_image = self.preprocess_image()
 
             # Apply PCA transformation
-            pca_features = self.pca_model.transform(processed_image)
-
-            # Normalize using the loaded scaler
-            normalized_data = self.scaler.transform(pca_features)
-
-            # Predict using the classifier model
             if self.selected_plant_type.get() == 'Apple':
-                classifier_model = self.apple_model
+                pca_features = self.pca_apple_model.transform(processed_image)
+                normalized_data = self.scaler_apple_model.transform(pca_features)
+                classifier_model = self.classifier_apple_model
+
             elif self.selected_plant_type.get() == 'Corn':
-                classifier_model = self.corn_model
+                pca_features = self.pca_corn_model.transform(processed_image)
+                normalized_data = self.scaler_corn_model.transform(pca_features)
+                classifier_model = self.classifier_corn_model
+            
             elif self.selected_plant_type.get() == 'Grapes':
-                classifier_model = self.grapes_model
+                pca_features = self.pca_grapes_model.transform(processed_image)
+                normalized_data = self.scaler_grapes_model.transform(pca_features)
+                classifier_model = self.classifier_grapes_model
+
             elif self.selected_plant_type.get() == 'Potato':
-                classifier_model = self.potato_model
+                pca_features = self.pca_potato_model.transform(processed_image)
+                normalized_data = self.scaler_potato_model.transform(pca_features)
+                classifier_model = self.classifier_potato_model
+
             elif self.selected_plant_type.get() == 'Tomato':
-                classifier_model = self.tomato_model
+                pca_features = self.pca_tomato_model.transform(processed_image)
+                normalized_data = self.scaler_tomato_model.transform(pca_features)
+                classifier_model = self.classifier_tomato_model
 
             prediction = classifier_model.predict(normalized_data)
 
             # Map the prediction to the actual disease type (modify as needed)
-            disease_type = prediction
+            disease_type = prediction[0]
 
             # Display the result in the disease_result entry field
             self.plant_result.set(self.selected_plant_type.get())
             self.disease_result.set(disease_type)
 
-            # Clear the plant result entry field (you can customize this as needed)
-            #self.plant_result.set("")
-
-
-            # Display the result
-            #self.plant_result.set(f"Type of {self.selected_plant_type.get()} Plant Result")
-            #self.disease_result.set(f"Type of {self.selected_plant_type.get()} Disease Result")
-            #self.status_label.config(text=f"Predicted Disease: {disease_type}")
-
 # Load PCA model, StandardScaler, and classifier models
-pca_model = joblib.load('models/pca_model.pkl')
-scaler = joblib.load('models/scaler_model.pkl')
-apple_model = joblib.load('models/classifiers/Apple_Classifier_model.pkl')
-corn_model = joblib.load('models/classifiers/Corn_Classifier_model.pkl')
-grapes_model = joblib.load('models/classifiers/Grapes_Classifier_model.pkl')
-potato_model = joblib.load('models/classifiers/Potato_Classifier_model.pkl')
-tomato_model = joblib.load('models/classifiers/Tomato_Classifier_model.pkl')
+pca_apple_model = joblib.load('models/pca/Apple_pca_model.pkl')
+pca_corn_model = joblib.load('models/pca/Corn_pca_model.pkl')
+pca_grapes_model = joblib.load('models/pca/Grapes_pca_model.pkl')
+pca_potato_model = joblib.load('models/pca/Potato_pca_model.pkl')
+pca_tomato_model = joblib.load('models/pca/Tomato_pca_model.pkl')
+
+scaler_apple_model = joblib.load('models/scalers/Apple_scaler_model.pkl')
+scaler_corn_model = joblib.load('models/scalers/Corn_scaler_model.pkl')
+scaler_grapes_model = joblib.load('models/scalers/Grapes_scaler_model.pkl')
+scaler_potato_model = joblib.load('models/scalers/Potato_scaler_model.pkl')
+scaler_tomato_model = joblib.load('models/scalers/Tomato_scaler_model.pkl')
+
+classifier_apple_model = joblib.load('models/classifiers/Apple_Classifier_model.pkl')
+classifier_corn_model = joblib.load('models/classifiers/Corn_classifier_model.pkl')
+classifier_grapes_model = joblib.load('models/classifiers/Grapes_Classifier_model.pkl')
+classifier_potato_model = joblib.load('models/classifiers/Potato_Classifier_model.pkl')
+classifier_tomato_model = joblib.load('models/classifiers/Tomato_Classifier_model.pkl')
 
 if __name__ == '__main__':
     root = tk.Tk()
-    app = PlantDiseaseApp(root, pca_model, scaler, apple_model, corn_model, grapes_model, potato_model, tomato_model)
+    app = PlantDiseaseApp(root, pca_apple_model, pca_corn_model, pca_grapes_model, pca_potato_model, scaler_apple_model, scaler_corn_model, scaler_grapes_model, scaler_potato_model, scaler_tomato_model, classifier_apple_model, classifier_corn_model, classifier_grapes_model, classifier_potato_model, classifier_tomato_model)
     root.mainloop()
