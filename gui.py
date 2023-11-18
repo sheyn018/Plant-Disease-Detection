@@ -10,6 +10,8 @@ from skimage.measure import regionprops
 from scipy import stats
 from skimage.measure import label
 import joblib
+import os
+import shutil
 
 class PlantDiseaseApp:
     def __init__(self, root, pca_apple_model, pca_corn_model, pca_grapes_model, pca_potato_model, scaler_apple_model, scaler_corn_model, scaler_grapes_model, scaler_potato_model, scaler_tomato_model, classifier_apple_model, classifier_corn_model, classifier_grapes_model, classifier_potato_model, classifier_tomato_model):
@@ -89,13 +91,19 @@ class PlantDiseaseApp:
         self.root.grid_columnconfigure(2, weight=1)
 
     def upload_image(self):
+        # Ask the user to select an image file
         file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png *.jpg *.jpeg *.gif *.bmp")])
 
         if file_path:
-            self.image_path = file_path
+            # Save a temporary copy in the "static" folder as "temp.jpg"
+            temp_folder = "static"
+            temp_file_path = os.path.join(temp_folder, "temp.jpg")
+            shutil.copyfile(file_path, temp_file_path)
+
+            self.image_path = temp_file_path
 
             # Display the selected image
-            img = Image.open(file_path)
+            img = Image.open(temp_file_path)
             img = ImageTk.PhotoImage(img)
             self.image_canvas.config(width=img.width(), height=img.height())
             self.image_canvas.create_image(0, 0, anchor=tk.NW, image=img)
@@ -118,7 +126,7 @@ class PlantDiseaseApp:
     
         # Load the image and perform preprocessing
         img = Image.open(self.image_path)
-        main_img = np.array(img)
+        main_img = cv2.imread('static/temp.jpg')
 
         # Preprocessing
         img = cv2.cvtColor(main_img, cv2.COLOR_BGR2RGB)
@@ -222,6 +230,10 @@ class PlantDiseaseApp:
                 pca_features = self.pca_tomato_model.transform(processed_image)
                 normalized_data = self.scaler_tomato_model.transform(pca_features)
                 classifier_model = self.classifier_tomato_model
+
+            print('Processed image: ', processed_image)
+            print('PCA features: ', pca_features)
+            print('Normalized data: ', normalized_data)
 
             prediction = classifier_model.predict(normalized_data)
 
