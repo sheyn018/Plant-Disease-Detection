@@ -14,7 +14,11 @@ import os
 import shutil
 
 class PlantDiseaseApp:
-    def __init__(self, root, pca_apple_model, pca_corn_model, pca_grapes_model, pca_potato_model, scaler_apple_model, scaler_corn_model, scaler_grapes_model, scaler_potato_model, scaler_tomato_model, classifier_apple_model, classifier_corn_model, classifier_grapes_model, classifier_potato_model, classifier_tomato_model):
+    def __init__(self, root, 
+                 pca_apple_model, pca_corn_model, pca_grapes_model, pca_potato_model, pca_rice_model,
+                 scaler_apple_model, scaler_corn_model, scaler_grapes_model, scaler_potato_model, scaler_tomato_model, scaler_rice_model,
+                 classifier_apple_model, classifier_corn_model, classifier_grapes_model, classifier_potato_model, classifier_tomato_model, classifier_rice_model):
+        
         self.root = root
         self.root.title("Plant Disease Detection App")
         self.root.configure(bg="#B3E0FF")  # Set the background color for the entire app
@@ -27,18 +31,21 @@ class PlantDiseaseApp:
         self.pca_grapes_model = pca_grapes_model
         self.pca_potato_model = pca_potato_model
         self.pca_tomato_model = pca_tomato_model
+        self.pca_rice_model = pca_rice_model
 
         self.scaler_apple_model = scaler_apple_model
         self.scaler_corn_model = scaler_corn_model
         self.scaler_grapes_model = scaler_grapes_model
         self.scaler_potato_model = scaler_potato_model
         self.scaler_tomato_model = scaler_tomato_model
+        self.scaler_rice_model = scaler_rice_model
 
         self.classifier_apple_model = classifier_apple_model
         self.classifier_corn_model = classifier_corn_model
         self.classifier_grapes_model = classifier_grapes_model
         self.classifier_potato_model = classifier_potato_model
         self.classifier_tomato_model = classifier_tomato_model
+        self.classifier_rice_model = classifier_rice_model
 
         self.create_widgets()
 
@@ -55,7 +62,7 @@ class PlantDiseaseApp:
         plant_type_label = tk.Label(self.root, text="Select Plant Type:", font=("Arial", 14), bg="#B3E0FF")
         plant_type_label.grid(row=2, column=0, padx=20, pady=5, sticky="w")
 
-        plant_types = ['Apple', 'Corn', 'Grapes', 'Potato', 'Tomato']
+        plant_types = ['Apple', 'Corn', 'Grapes', 'Potato', 'Tomato', 'Rice']
         plant_type_menu = tk.OptionMenu(self.root, self.selected_plant_type, *plant_types)
         plant_type_menu.grid(row=2, column=1, padx=20, pady=5, sticky="w")
 
@@ -231,6 +238,11 @@ class PlantDiseaseApp:
                 normalized_data = self.scaler_tomato_model.transform(pca_features)
                 classifier_model = self.classifier_tomato_model
 
+            elif self.selected_plant_type.get() == 'Rice':
+                pca_features = self.pca_rice_model.transform(processed_image)
+                normalized_data = self.scaler_rice_model.transform(pca_features)
+                classifier_model = self.classifier_rice_model
+
             print('Processed image: ', processed_image)
             print('PCA features: ', pca_features)
             print('Normalized data: ', normalized_data)
@@ -250,20 +262,26 @@ pca_corn_model = joblib.load('models/pca/Corn_pca_model.pkl')
 pca_grapes_model = joblib.load('models/pca/Grapes_pca_model.pkl')
 pca_potato_model = joblib.load('models/pca/Potato_pca_model.pkl')
 pca_tomato_model = joblib.load('models/pca/Tomato_pca_model.pkl')
+pca_rice_model = joblib.load('models/pca/Rice_pca_model.pkl')
 
 scaler_apple_model = joblib.load('models/scalers/Apple_scaler_model.pkl')
 scaler_corn_model = joblib.load('models/scalers/Corn_scaler_model.pkl')
 scaler_grapes_model = joblib.load('models/scalers/Grapes_scaler_model.pkl')
 scaler_potato_model = joblib.load('models/scalers/Potato_scaler_model.pkl')
 scaler_tomato_model = joblib.load('models/scalers/Tomato_scaler_model.pkl')
+scaler_rice_model = joblib.load('models/scalers/Rice_scaler_model.pkl')
 
 classifier_apple_model = joblib.load('models/classifiers/Apple_Classifier_model.pkl')
 classifier_corn_model = joblib.load('models/classifiers/Corn_classifier_model.pkl')
 classifier_grapes_model = joblib.load('models/classifiers/Grapes_Classifier_model.pkl')
 classifier_potato_model = joblib.load('models/classifiers/Potato_Classifier_model.pkl')
 classifier_tomato_model = joblib.load('models/classifiers/Tomato_Classifier_model.pkl')
+classifier_rice_model = joblib.load('models/classifiers/Rice_Classifier_model.pkl')
 
 if __name__ == '__main__':
     root = tk.Tk()
-    app = PlantDiseaseApp(root, pca_apple_model, pca_corn_model, pca_grapes_model, pca_potato_model, scaler_apple_model, scaler_corn_model, scaler_grapes_model, scaler_potato_model, scaler_tomato_model, classifier_apple_model, classifier_corn_model, classifier_grapes_model, classifier_potato_model, classifier_tomato_model)
+    app = PlantDiseaseApp(root, 
+                          pca_apple_model, pca_corn_model, pca_grapes_model, pca_potato_model, pca_rice_model,
+                          scaler_apple_model, scaler_corn_model, scaler_grapes_model, scaler_potato_model, scaler_tomato_model, scaler_rice_model,
+                          classifier_apple_model, classifier_corn_model, classifier_grapes_model, classifier_potato_model, classifier_tomato_model, classifier_rice_model)
     root.mainloop()
