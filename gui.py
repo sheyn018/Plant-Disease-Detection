@@ -106,11 +106,18 @@ class PlantDiseaseApp:
             temp_folder = "static"
             temp_file_path = os.path.join(temp_folder, "temp.jpg")
             shutil.copyfile(file_path, temp_file_path)
-
             self.image_path = temp_file_path
+            
+            with Image.open(temp_file_path) as img:
+                # Resize the image
+                resized_img = img.resize((300, 150))  # Corrected the resizing argument
 
-            # Display the selected image
-            img = Image.open(temp_file_path)
+                # Save the resized image to the output path
+                resized_file_path = os.path.join(temp_folder, "resized.jpg")
+                resized_img.save(resized_file_path)
+
+            # Display the resized image
+            img = Image.open(resized_file_path)
             img = ImageTk.PhotoImage(img)
             self.image_canvas.config(width=img.width(), height=img.height())
             self.image_canvas.create_image(0, 0, anchor=tk.NW, image=img)
@@ -121,6 +128,7 @@ class PlantDiseaseApp:
             self.plant_result.set("")  # Clear the plant result entry field
         else:
             self.status_label.config(text="No image selected")
+
 
     def preprocess_image(self):
         names = ['area', 'perimeter', 'physiological_length', 'physiological_width', 'aspect_ratio',
