@@ -32,6 +32,11 @@ class PlantDiseaseApp:
         self.pca_potato_model = pca_potato_model
         self.pca_tomato_model = pca_tomato_model
         self.pca_rice_model = pca_rice_model
+        self.pca_pepper_model = pca_pepper_model
+        self.pca_strawberry_model = pca_strawberry_model
+        self.pca_cherry_model = pca_cherry_model
+        self.pca_guava_model = pca_guava_model
+        self.pca_mango_model = pca_mango_model
 
         self.scaler_apple_model = scaler_apple_model
         self.scaler_corn_model = scaler_corn_model
@@ -39,6 +44,11 @@ class PlantDiseaseApp:
         self.scaler_potato_model = scaler_potato_model
         self.scaler_tomato_model = scaler_tomato_model
         self.scaler_rice_model = scaler_rice_model
+        self.scaler_pepper_model = scaler_pepper_model
+        self.scaler_strawberry_model = scaler_strawberry_model
+        self.scaler_cherry_model = scaler_cherry_model
+        self.scaler_guava_model = scaler_guava_model
+        self.scaler_mango_model = scaler_mango_model
 
         self.classifier_apple_model = classifier_apple_model
         self.classifier_corn_model = classifier_corn_model
@@ -46,23 +56,28 @@ class PlantDiseaseApp:
         self.classifier_potato_model = classifier_potato_model
         self.classifier_tomato_model = classifier_tomato_model
         self.classifier_rice_model = classifier_rice_model
+        self.classifier_pepper_model = classifier_pepper_model
+        self.classifier_strawberry_model = classifier_strawberry_model
+        self.classifier_cherry_model = classifier_cherry_model
+        self.classifier_guava_model = classifier_guava_model
+        self.classifier_mango_model = classifier_mango_model
 
         self.create_widgets()
 
     def create_widgets(self):
         # Create a title label
         title_label = tk.Label(self.root, text="PLANT DISEASE DETECTION APP", font=("Arial", 24), bg="#B3E0FF")
-        title_label.grid(row=0, column=0, columnspan=3, pady=20, sticky="nsew")
+        title_label.grid(row=0, column=0, columnspan=3, pady=10, sticky="nsew")
 
         # Create a canvas for displaying the selected image
-        self.image_canvas = tk.Canvas(self.root, width=400, height=400, bg="white", highlightthickness=0)
+        self.image_canvas = tk.Canvas(self.root, width=200, height=190, bg="white", highlightthickness=0)
         self.image_canvas.grid(row=1, column=2, padx=20, pady=10, sticky="nsew")
 
         # Choose Plant Type
         plant_type_label = tk.Label(self.root, text="Select Plant Type:", font=("Arial", 14), bg="#B3E0FF")
         plant_type_label.grid(row=2, column=0, padx=20, pady=5, sticky="w")
 
-        plant_types = ['Apple', 'Corn', 'Grapes', 'Potato', 'Tomato', 'Rice']
+        plant_types = ['Apple', 'Corn', 'Grapes', 'Potato', 'Tomato', 'Rice', 'Corn', 'Corn', 'Corn', 'Corn', 'Corn']
         plant_type_menu = tk.OptionMenu(self.root, self.selected_plant_type, *plant_types)
         plant_type_menu.grid(row=2, column=1, padx=20, pady=5, sticky="w")
 
@@ -106,29 +121,32 @@ class PlantDiseaseApp:
             temp_folder = "static"
             temp_file_path = os.path.join(temp_folder, "temp.jpg")
             shutil.copyfile(file_path, temp_file_path)
+
             self.image_path = temp_file_path
             
             with Image.open(temp_file_path) as img:
                 # Resize the image
-                resized_img = img.resize((300, 150))  # Corrected the resizing argument
+                resized_img = img.resize((200, 200))  # Corrected the resizing argument
 
                 # Save the resized image to the output path
                 resized_file_path = os.path.join(temp_folder, "resized.jpg")
                 resized_img.save(resized_file_path)
 
-            # Display the resized image
-            img = Image.open(resized_file_path)
+            # Display the selected image
+            img = Image.open(temp_file_path)
             img = ImageTk.PhotoImage(img)
-            self.image_canvas.config(width=img.width(), height=img.height())
-            self.image_canvas.create_image(0, 0, anchor=tk.NW, image=img)
-            self.image_canvas.image = img
+            res_img = Image.open(resized_file_path)
+            res_img = ImageTk.PhotoImage(res_img)
+
+            self.image_canvas.config(width=200, height=190)  # Set fixed canvas size
+            self.image_canvas.create_image(0, 0, anchor=tk.NW, image=res_img)
+            self.image_canvas.image = res_img
             self.status_label.config(text="")  # Clear the text
             self.status_label.place_forget()  # Hide the status label
             self.disease_result.set("")  # Clear the disease result entry field
             self.plant_result.set("")  # Clear the plant result entry field
         else:
             self.status_label.config(text="No image selected")
-
 
     def preprocess_image(self):
         names = ['area', 'perimeter', 'physiological_length', 'physiological_width', 'aspect_ratio',
@@ -250,6 +268,31 @@ class PlantDiseaseApp:
                 pca_features = self.pca_rice_model.transform(processed_image)
                 normalized_data = self.scaler_rice_model.transform(pca_features)
                 classifier_model = self.classifier_rice_model
+                
+            elif self.selected_plant_type.get() == 'Corn':
+                pca_features = self.pca_pepper_model.transform(processed_image)
+                normalized_data = self.scaler_pepper_model.transform(pca_features)
+                classifier_model = self.classifier_pepper_model
+                
+            elif self.selected_plant_type.get() == 'Corn':
+                pca_features = self.pca_strawberry_model.transform(processed_image) 
+                normalized_data = self.scaler_strawberry_model.transform(pca_features)
+                classifier_model = self.classifier_strawberry_model
+                
+            elif self.selected_plant_type.get() == 'Corn':
+                pca_features = self.pca_cherry_model.transform(processed_image)
+                normalized_data = self.scaler_cherry_model.transform(pca_features)
+                classifier_model = self.classifier_cherry_model
+            
+            elif self.selected_plant_type.get() == 'Corn':
+                pca_features = self.pca_guava_model.transform(processed_image)
+                normalized_data = self.scaler_guava_model.transform(pca_features)
+                classifier_model = self.classifier_guava_model
+            
+            elif self.selected_plant_type.get() == 'Corn':
+                pca_features = self.pca_mango_model.transform(processed_image)
+                normalized_data = self.scaler_mango_model.transform(pca_features)
+                classifier_model = self.classifier_mango_model
 
             print('Processed image: ', processed_image)
             print('PCA features: ', pca_features)
@@ -271,6 +314,11 @@ pca_grapes_model = joblib.load('models/pca/Grapes_pca_model.pkl')
 pca_potato_model = joblib.load('models/pca/Potato_pca_model.pkl')
 pca_tomato_model = joblib.load('models/pca/Tomato_pca_model.pkl')
 pca_rice_model = joblib.load('models/pca/Rice_pca_model.pkl')
+pca_pepper_model = joblib.load('models/pca/Corn_pca_model.pkl')
+pca_strawberry_model = joblib.load('models/pca/Corn_pca_model.pkl')
+pca_cherry_model = joblib.load('models/pca/Corn_pca_model.pkl')
+pca_guava_model = joblib.load('models/pca/Corn_pca_model.pkl')
+pca_mango_model = joblib.load('models/pca/Corn_pca_model.pkl')
 
 scaler_apple_model = joblib.load('models/scalers/Apple_scaler_model.pkl')
 scaler_corn_model = joblib.load('models/scalers/Corn_scaler_model.pkl')
@@ -278,16 +326,27 @@ scaler_grapes_model = joblib.load('models/scalers/Grapes_scaler_model.pkl')
 scaler_potato_model = joblib.load('models/scalers/Potato_scaler_model.pkl')
 scaler_tomato_model = joblib.load('models/scalers/Tomato_scaler_model.pkl')
 scaler_rice_model = joblib.load('models/scalers/Rice_scaler_model.pkl')
+scaler_pepper_model = joblib.load('models/scalers/Corn_scaler_model.pkl')
+scaler_strawberry_model = joblib.load('models/scalers/Corn_scaler_model.pkl')
+scaler_cherry_model = joblib.load('models/scalers/Corn_scaler_model.pkl')
+scaler_guava_model = joblib.load('models/scalers/Corn_scaler_model.pkl')
+scaler_mango_model = joblib.load('models/scalers/Corn_scaler_model.pkl')
 
 classifier_apple_model = joblib.load('models/classifiers/Apple_Classifier_model.pkl')
-classifier_corn_model = joblib.load('models/classifiers/Corn_classifier_model.pkl')
+classifier_corn_model = joblib.load('models/classifiers/Corn_Classifier_model.pkl')
 classifier_grapes_model = joblib.load('models/classifiers/Grapes_Classifier_model.pkl')
 classifier_potato_model = joblib.load('models/classifiers/Potato_Classifier_model.pkl')
 classifier_tomato_model = joblib.load('models/classifiers/Tomato_Classifier_model.pkl')
 classifier_rice_model = joblib.load('models/classifiers/Rice_Classifier_model.pkl')
+classifier_pepper_model = joblib.load('models/classifiers/Corn_Classifier_model.pkl')
+classifier_strawberry_model = joblib.load('models/classifiers/Corn_Classifier_model.pkl')
+classifier_cherry_model = joblib.load('models/classifiers/Corn_Classifier_model.pkl')
+classifier_guava_model = joblib.load('models/classifiers/Corn_Classifier_model.pkl')
+classifier_mango_model = joblib.load('models/classifiers/Corn_Classifier_model.pkl')
 
 if __name__ == '__main__':
     root = tk.Tk()
+    root.geometry("800x480")
     app = PlantDiseaseApp(root, 
                           pca_apple_model, pca_corn_model, pca_grapes_model, pca_potato_model, pca_rice_model,
                           scaler_apple_model, scaler_corn_model, scaler_grapes_model, scaler_potato_model, scaler_tomato_model, scaler_rice_model,
